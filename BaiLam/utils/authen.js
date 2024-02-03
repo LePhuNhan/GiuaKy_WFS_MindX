@@ -6,11 +6,11 @@ export const authen = async (req, res, next) => {
   // Token verify
   try {
     const payload = jwt.verify(token, process.env.JWT_ACCESS_TOKEN);
+    // Gắn user vào request
+    req.user = payload; // Thay cho user
+    next();
   } catch (error) {
-    // Nếu token sai -> throw 401, 403
-    // Nếu token hết hạn -> throw
+    // Xử lý lỗi xác thực token
+    return res.status(401).send("Unauthorized");
   }
-  // Gắn user vào request
-  req.user = payload; // Thay cho user
-  next();
 };

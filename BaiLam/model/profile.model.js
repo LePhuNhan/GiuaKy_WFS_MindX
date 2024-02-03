@@ -8,8 +8,8 @@ const ProfileSchema = new Schema({
   placeOfBirth: String,
   nationality: String,
   educationProcess: String,
-  work: { type: mongoose.Types.ObjectId, ref: "Work" },
-  additionalInfo: { type: mongoose.Types.ObjectId, ref: "AdditionalInfo" },
+  work: [{ type: mongoose.Types.ObjectId, ref: "Work" }],
+  additionalInfo: [{ type: mongoose.Types.ObjectId, ref: "AdditionalInfo" }],
 });
 
 const ProfileModel = mongoose.model("Profile", ProfileSchema);

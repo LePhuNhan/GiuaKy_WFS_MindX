@@ -1,7 +1,16 @@
 import { UserModel } from "../model/user.model.js";
 
+export const getMe = async (req, res, next) => {
+  const userId = req.user.id;
+  const user = await UserModel.findById(userId);
+  if (!user) {
+    return res.status(404).send("User not found");
+  }
+  res.status(200).send(user);
+};
+
 export const getAllUsers = async (req, res, next) => {
-  const users = await UserModel.find().populate("profile");
+  const users = await UserModel.find().populate("profile")
   res.status(200).send(users);
 };
 
@@ -10,19 +19,27 @@ export const createUser = async (req, res, next) => {
   res.status(201).send(user);
 };
 
-export const getUserById = ("/:userId",async (req, res, next) => {
-  const user = await UserModel.findById(req.params.User_id);
-  res.status(200).send(user);
-});
+export const getUserById = async (req, res, next) => {
+  try {
+      const user = await UserModel.findById(req.params.userId).populate("profile");
+      if (!user) {
+          return res.status(404).send("User not found");
+      }
+      res.status(200).send(user);
+  } catch (error) {
+      next(error);
+  }
+};
 
-export const updateUser = ("/:userId",async (req, res, next) => {
-  const user = await UserModel.findByIdAndUpdate(req.params.User_id, req.body, { new: true });
+
+export const updateUser = async (req, res, next) => {
+  const user = await UserModel.findByIdAndUpdate(req.params.userId, req.body, { new: true });
   res.status(201).send(user);
-});
+};
 
 
-export const deleteUser = ("/:userId",async (req, res, next) => {
-  const userId = req.params.User_id;
+export const deleteUser = async (req, res, next) => {
+  const userId = req.params.userId;
   await UserModel.findByIdAndDelete(userId);
-  res.sendStatus(204);
-});
+  res.sendStatus(204).send("deleted success");
+};
