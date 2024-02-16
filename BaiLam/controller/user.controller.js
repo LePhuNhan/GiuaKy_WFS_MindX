@@ -5,10 +5,10 @@ import { getAllUsers, createUser, getUserById, updateUser, deleteUser, getMe} fr
 
 const userController = express.Router();
 
-userController.get("/", asyncCatch(getAllUsers));
-userController.get("/:userId", asyncCatch(getUserById));
-userController.post("/", asyncCatch(createUser));
-userController.put("/:userId", asyncCatch(updateUser));
-userController.delete("/:userId", asyncCatch(deleteUser));
+userController.get("/", authen,asyncCatch(getAllUsers));
+userController.get("/:userId",authen, asyncCatch(getUserById));
+userController.post("/",authen, asyncCatch(createUser));
+userController.put("/:userId", authen,asyncCatch(updateUser));
+userController.delete("/:userId", authen,asyncCatch(deleteUser));
 userController.get("/me", asyncCatch(authen), asyncCatch(getMe));
 export { userController };

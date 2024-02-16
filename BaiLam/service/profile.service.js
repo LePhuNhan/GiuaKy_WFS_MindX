@@ -44,11 +44,14 @@ export const createProfile = async (req, res, next) => {
 export const getProfileById = async (req, res, next) => {
   try {
     const profileId = req.params.profileId;
-
+// const userId = req.user.id;
     const profile = await ProfileModel.findById(profileId);
     if (!profile) {
       return res.status(404).send("Profile not found");
     }
+       // if (existingProfile.userId !== userId) {
+    //   return res.status(403).send("Unauthorized to update this profile");
+    // }
     res.status(200).send(profile);
   } catch (error) {
     next(error);
@@ -59,13 +62,15 @@ export const getProfileById = async (req, res, next) => {
 export const updateProfile = async (req, res, next) => {
   try {
     const profileId = req.params.profileId;
+    // const userId = req.user.id;
 
     const existingProfile = await ProfileModel.findById(profileId);
     if (!existingProfile) {
       return res.status(404).send("No Profile Info found");
     }
-    
-
+    // if (existingProfile.userId !== userId) {
+    //   return res.status(403).send("Unauthorized to update this profile");
+    // }
 
     const updatedProfile = await ProfileModel.findByIdAndUpdate(profileId, req.body, { new: true });
 
