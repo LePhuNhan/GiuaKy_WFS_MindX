@@ -1,6 +1,7 @@
 import express from "express";
 import { asyncCatch } from "../utils/trycatch.js";
-import { login, refresh, register } from "../service/auth.service.js";
+import { authen } from "../utils/authen.js";
+import { login, refresh, register, logout } from "../service/auth.service.js";
 import {
   validateLogin,
   validateRefresh,
@@ -20,5 +21,6 @@ authController.post(
   asyncCatch(validateRefresh),
   asyncCatch(refresh)
 );
+authController.post("/logout", asyncCatch(authen),asyncCatch(logout));
 
 export { authController };

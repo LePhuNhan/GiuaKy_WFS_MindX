@@ -34,7 +34,7 @@ export const createProfile = async (req, res, next) => {
     await UserModel.findByIdAndUpdate(userId, {
       $push: { profile: profile._id },
     });
-    res.status(201).send(profile); // Gửi phản hồi với đối tượng profile
+    res.status(201).send(profile);
   } catch (error) {
     next(error);
   }
@@ -43,35 +43,38 @@ export const createProfile = async (req, res, next) => {
 
 export const getProfileById = async (req, res, next) => {
   try {
-    const profile = await ProfileModel.findById(req.params.profileId).populate("additionalInfo").populate("work");
+    const profileId = req.params.profileId;
+
+    const profile = await ProfileModel.findById(profileId);
+    if (!profile) {
+      return res.status(404).send("Profile not found");
+    }
     res.status(200).send(profile);
   } catch (error) {
     next(error);
   }
 };
 
+
 export const updateProfile = async (req, res, next) => {
   try {
     const profileId = req.params.profileId;
+
     const existingProfile = await ProfileModel.findById(profileId);
     if (!existingProfile) {
-      res.status(400).send("No Profile Info found");
+      return res.status(404).send("No Profile Info found");
     }
+    
 
-    const userId = req.body.userId;
-    await ProfileModel.findByIdAndUpdate(profileId, req.body, { new: true });
-    const user = await UserModel.findOne({ profile: profileId });
-    if (!user) {
-      await UserModel.findByIdAndUpdate(userId, {
-        $push: { profile: profileId },
-      });
-    }
-    const newProfile = await ProfileModel.findById(profileId);
-    res.status(201).send(newProfile);
+
+    const updatedProfile = await ProfileModel.findByIdAndUpdate(profileId, req.body, { new: true });
+
+    res.status(201).send(updatedProfile);
   } catch (error) {
     next(error);
   }
 };
+
 
 export const deleteProfile = async (req, res, next) => {
   try {
@@ -80,13 +83,13 @@ export const deleteProfile = async (req, res, next) => {
     if (!existingProfile) {
       res.status(400).send("No Profile found");
     }
-    const userId = existingProfile.userId; // Lấy id của profile từ công việc
+    const userId = existingProfile.userId;
 
     await UserModel.findByIdAndUpdate(userId, {
       $pull: { profile: profileId },
-    }); // Xoá quan hệ
+    });
 
-    await ProfileModel.findByIdAndDelete(profileId); // Xoá collection chính
+    await ProfileModel.findByIdAndDelete(profileId);
     res.sendStatus(204);
   } catch (error) {
     next(error);

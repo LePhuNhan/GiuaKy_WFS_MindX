@@ -23,9 +23,7 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   const { username, password } = req.body;
-  const user = await UserModel.findOne({
-    $or: [{ username }],
-  });
+  const user = await UserModel.findOne({ username });
 
   if (!user) {
     throw new Error("Username not found!");
@@ -40,9 +38,9 @@ export const login = async (req, res, next) => {
     id: user._id.toString(),
     username: user.username,
   };
-console.log(process.env.JWT_ACCESS_TOKEN);
+
   const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_TOKEN, {
-    expiresIn: "30s",
+    expiresIn: "300s",
   });
 
   const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_TOKEN, {
@@ -67,4 +65,30 @@ export const refresh = (req, res, next) => {
   });
 
   res.status(200).send({ accessToken, refreshToken: newRefreshToken });
+};
+
+export const logout = async (req, res, next) => {
+  try {
+    const accessToken = req.headers.authorization.split(" ")[1];
+    if (!accessToken) {
+      return res.status(401).send("Access token is missing");
+    }
+
+    if (!req.app.get("tokenBlacklist")) {
+      req.app.set("tokenBlacklist", []);
+    }
+    const tokenBlacklist = req.app.get("tokenBlacklist");
+
+    const decodedAccessToken = jwt.decode(accessToken);
+    if (!decodedAccessToken) {
+      return res.status(401).send("Invalid access token");
+    }
+
+    // Thêm id của token vào tokenBlacklist
+    tokenBlacklist.push(decodedAccessToken.jti);
+
+    res.status(200).send("Logged out successfully");
+  } catch (error) {
+    next(error);
+  }
 };
