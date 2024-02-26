@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const ProfileSchema = new Schema({
+  author: String,
   fullname: String,
   dateOfBirth: String,
   placeOfBirth: String,

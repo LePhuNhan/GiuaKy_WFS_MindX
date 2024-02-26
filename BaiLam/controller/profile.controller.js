@@ -10,7 +10,7 @@ const profileController = express.Router();
 profileController.get("/",authen, asyncCatch(getAllProfiles));
 profileController.get("/:profileId", authen,asyncCatch(getProfileById));
 profileController.post("/",authen, asyncCatch(createProfile));
-profileController.put("/:profileId",authen, asyncCatch(updateProfile));
+profileController.put("/:profileId",authen,author, asyncCatch(updateProfile));
 profileController.delete("/:profileId", authen,asyncCatch(deleteProfile));
 
 export { profileController };
